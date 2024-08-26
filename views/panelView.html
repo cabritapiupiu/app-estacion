@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Morphyx - Panel</title>
+
+	<link rel="stylesheet" type="text/css" href="views/static/css/vars.css">
+	<link rel="stylesheet" type="text/css" href="views/static/css/styles.css">
+	
+</head>
+<body>
+
+
+	
+
+	 <div id="header">
+
+			
+			
+			<div id="control">
+					<a href="landing"  class="css-button-rounded--yellow">landing</a>
+			</div>
+			 
+	
+		</div>
+	 <div id="content">
+
+			<div id="contenedor_listado">
+				
+				<div id="listado-estacion">
+					
+					
+				</div>
+
+			</div>
+		</div>
+
+	 
+
+
+<script type="text/javascript">
+
+function data_clima(id) {
+    localStorage.setItem("id_clima", id);
+}
+
+	document.addEventListener("DOMContentLoaded", () => {
+    loadEstaciones().then(data => {
+    	
+        let listado = document.querySelector("#listado-estacion"); 
+
+        for (var i = data.length - 1; i >= 0; i--) { 
+        	 
+            listado.innerHTML += `
+                	<a class="card" href="detalle "onclick="data_clima(${data[i].chipid})" >
+                	<div class="dato">${data[i].apodo}</div>
+                	<div class="dato">${data[i].ubicacion}</div>
+               	
+                   	<div class="dato"> Visitas: ${data[i].visitas}</div>
+                
+            		</a>`;
+
+
+
+
+
+        }
+    }).catch(error => console.error("Error panel data:", error)); 
+});
+
+async function loadEstaciones() {
+    const response = await fetch("https://mattprofe.com.ar/proyectos/app-estacion/datos.php?mode=list-stations");
+    const data = await response.json();
+    return data;
+}
+
+
+</script>
+	
+</body>
+</html>

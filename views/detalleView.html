@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Morphyx - Listado</title>
+
+	<link rel="stylesheet" type="text/css" href="views/static/css/vars.css">
+	<link rel="stylesheet" type="text/css" href="views/static/css/styles.css">
+	
+</head>
+<body>
+
+
+	
+
+	 <div id="header">
+
+			
+			
+			<div id="control">
+					<a href="landing"  class="css-button-rounded--yellow">landing</a>
+					<a href="panel"  class="css-button-rounded--yellow">volver</a>
+			</div>
+			 
+	
+		</div>
+	 <div id="content">
+
+			<div id="contenedor_listado">
+				
+				<div id="listado-estacion">
+					
+					
+				</div>
+
+			</div>
+		</div>
+
+	 
+
+
+<script type="text/javascript">
+
+let hola= localStorage.getItem("id_clima")
+console.log(hola)
+	document.addEventListener("DOMContentLoaded", () => {
+    loadEstaciones().then(data => {
+    	
+        let listado = document.querySelector("#listado-estacion"); 
+
+        for (var i = data.length - 1; i >= 0; i--) { 
+        	if (data[i].chipid == localStorage.getItem("id_clima")) {	
+
+
+        		let result="inactivo"
+        	if (data[i].dias_inactivo ==0) {	
+        		result="activo"
+
+        	}
+        	 listado.innerHTML += `
+        
+                	<div class="card">
+                		<div class="dato">${data[i].apodo}</div>
+                		<div class="dato">${data[i].ubicacion}</div>
+                   		<div class="dato"> Visitas: ${data[i].visitas}</div>
+                   		<div class="dato">  ${result}</div>
+        			</div>
+
+
+
+
+
+
+
+
+
+        	`;}
+            
+        }
+    }).catch(error => console.error("Error detalle data:", error)); 
+});
+
+async function loadEstaciones() {
+    const response = await fetch("https://mattprofe.com.ar/proyectos/app-estacion/datos.php?mode=list-stations");
+    const data = await response.json();
+    return data;
+}
+
+</script>
+	
+
+	 <script type="text/javascript">
+	 	
+	 	
+
+	 </script>
+	
+</body>
+</html>
