@@ -2,99 +2,256 @@
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
+	   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Morphyx - Listado</title>
 
 	<link rel="stylesheet" type="text/css" href="views/static/css/vars.css">
 	<link rel="stylesheet" type="text/css" href="views/static/css/styles.css">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	
 </head>
 <body>
-
-
-	
-
 	 <div id="header">
-
-			
-			
 			<div id="control">
 					<a href="landing"  class="css-button-rounded--yellow">landing</a>
 					<a href="panel"  class="css-button-rounded--yellow">volver</a>
 			</div>
-			 
-	
 		</div>
-	 <div id="content">
-
-			<div id="contenedor_listado">
-				
-				<div id="listado-estacion">
-					
-					
+		<main>
+				<div class="contenedor_botones">
+					<button id="Temperatura" onclick="estado(id)">Temperatura</button>
+					<button  id="Humedad" onclick="estado(id)">Humedad</button>
+					<button id="Fuego" onclick="estado(id)">Fuego</button>
+					<button id="Presion" onclick="estado(id)">Presion</button>
+					<button id="Viento" onclick="estado(id)">Viento</button>
 				</div>
+				<div class="contenedor_grafico">
 
-			</div>
-		</div>
+	 				<div class="grafico">
+        				<canvas id="graph_canva"></canvas>
+    				</div>
+	 			</div>
 
+	 			<div class="info">
+	 				<h1>datos de la estacion</h1>
+	 					<div class="apodo">
+	 					</div>
+	 					<div class="ubi"></div>
+	 					<div class="tem">
+	 						    <div class="dato_1"></div>
+	 							<div class="dato_2"></div>
+	 							<div class="dato_3"></div>
+	 							<div class="dato_4"></div>
+	 							<div class="dato_5"></div>
+	 							<div class="dato_6"></div>
+	 					</div>
+		</main>
 	 
-
-
 <script type="text/javascript">
+	const MAX_DATOS = 7;
+	let dataJsonActual = ""
+	const INTERVAL_REFRESH = 60000;
+	let grafico = null;
+	let vista_actual = "Temperatura";
+	let chipid= localStorage.getItem("id_clima")
+	estado(vista_actual)
 
-let hola= localStorage.getItem("id_clima")
-console.log(hola)
-	document.addEventListener("DOMContentLoaded", () => {
-    loadEstaciones().then(data => {
-    	
-        let listado = document.querySelector("#listado-estacion"); 
+//esto es de app estacion XD
+async function refreshDatos(){
+	const response = await fetch(`https://mattprofe.com.ar/proyectos/app-estacion/datos.php?chipid=${chipid}&cant=7`);
+	const data = await response.json();
 
-        for (var i = data.length - 1; i >= 0; i--) { 
-        	if (data[i].chipid == localStorage.getItem("id_clima")) {	
+	mostrar(data);
 
-
-        		let result="inactivo"
-        	if (data[i].dias_inactivo ==0) {	
-        		result="activo"
-
-        	}
-        	 listado.innerHTML += `
-        
-                	<div class="card">
-                		<div class="dato">${data[i].apodo}</div>
-                		<div class="dato">${data[i].ubicacion}</div>
-                   		<div class="dato"> Visitas: ${data[i].visitas}</div>
-                   		<div class="dato">  ${result}</div>
-        			</div>
-
-
-
-
-
-
-
-
-
-        	`;}
-            
-        }
-    }).catch(error => console.error("Error detalle data:", error)); 
-});
+	datos(data)
+}
+refreshDatos(MAX_DATOS);
+setInterval(refreshDatos,INTERVAL_REFRESH);
+	
 
 async function loadEstaciones() {
-    const response = await fetch("https://mattprofe.com.ar/proyectos/app-estacion/datos.php?mode=list-stations");
+    const response = await fetch(`https://mattprofe.com.ar/proyectos/app-estacion/datos.php?chipid=${chipid}&cant=7`);
     const data = await response.json();
+    document.querySelector('.apodo').innerText = "Estacion: " + data[0].estacion	    
+    				
     return data;
 }
+
+
+function estado(id){
+	document.querySelector(`#${vista_actual}`).classList.add("display_none")
+	vista_actual=id;
+	document.querySelector(`#${vista_actual}`).classList.remove("display_none")
+	loadEstaciones().then(data => {
+				datos(data);
+				mostrar(data);
+				
+})}
+
+	function mostrar(data){
+switch (vista_actual) {
+	case "Temperatura":
+			document.querySelector('.dato_1').innerText = "Temperatura" 
+			document.querySelector('.dato_2').innerText = "Temperatura: " + data[0].temperatura
+    		document.querySelector('.dato_3').innerText = "Temperatura max: " + data[0].tempmax
+    		document.querySelector('.dato_4').innerText = "Temperatura: mini " + data[0].tempmin	
+    		document.querySelector('.dato_5').innerText = "" 
+    		document.querySelector('.dato_6').innerText = "" 
+
+		break;
+	case "Humedad":
+			document.querySelector('.dato_1').innerText = "Humedad:"
+			document.querySelector('.dato_2').innerText = "Humedad: " + data[0].humedad
+			document.querySelector('.dato_3').innerText = ""
+			document.querySelector('.dato_4').innerText = ""
+			document.querySelector('.dato_5').innerText = "" 
+    		document.querySelector('.dato_6').innerText = ""
+		break;
+
+	case "Fuego":
+			document.querySelector('.dato_1').innerText = "Fuego: "
+			document.querySelector('.dato_2').innerText = "FFMC: " + data[0].ffmc
+    		document.querySelector('.dato_3').innerText = "DMC: " + data[0].dmc
+    		document.querySelector('.dato_4').innerText = "DC: " + data[0].dc
+    		document.querySelector('.dato_5').innerText = "ISI: " + data[0].isi
+    		document.querySelector('.dato_6').innerText = "BUl: " + data[0].bui
+		break;
+
+	case "Presion":
+			document.querySelector('.dato_1').innerText = "Presion" 
+			document.querySelector('.dato_2').innerText = "HPA: " + data[0].presion
+			document.querySelector('.dato_3').innerText = ""
+			document.querySelector('.dato_4').innerText = ""
+			document.querySelector('.dato_5').innerText = "" 
+    		document.querySelector('.dato_6').innerText = ""
+			
+		break;	
+case "Viento":
+			document.querySelector('.dato_1').innerText = "Viento" 
+			document.querySelector('.dato_2').innerText = "Datos de viento: " + data[0].viento
+			document.querySelector('.dato_3').innerText = "Datos de viento maximo:" + data[0].maxviento
+			document.querySelector('.dato_4').innerText = ""
+			document.querySelector('.dato_5').innerText = "" 
+    		document.querySelector('.dato_6').innerText = ""
+
+			break;	
+		VIENTO
+}
+
+}
+function datos(data){
+			let Temperatura = []
+			let Humedad = []
+			let Presion = []
+			let Viento = []
+			let Fuego = []
+			let Fecha = []
+			data.shift();
+			
+		data.map(({ fecha, temperatura, humedad, viento, fwi, presion }) => {
+  
+  				const [, horaTotal] = fecha.split(" ");
+  				const [hora, minutos] = horaTotal.split(":");
+				const horaMinutos = `${hora}:${minutos}`;
+  				Fecha.push(horaMinutos);
+  				Temperatura.push(temperatura);
+  				Humedad.push(humedad);
+  				Viento.push(viento);
+  				Fuego.push(fwi);
+  				Presion.push(presion);
+});
+
+			Temperatura.reverse()
+			Fecha.reverse()
+			let datoActual
+			let bgColor = ''
+			switch (vista_actual) {
+				case 'Temperatura':
+					datoActual = Temperatura;
+					bgColor = 'rgb(255, 166, 0, 0.5)'
+					break;
+				case 'Humedad':
+					datoActual = Humedad;
+					bgColor = 'rgb(0, 0, 255, 0.5)'
+					break;
+				case 'Presion':
+					datoActual = Presion;
+					bgColor = 'rgb(0, 128, 0, 0.5)'
+					break;
+				case 'Fuego':
+					datoActual = Fuego;
+					bgColor = 'rgb(255, 0, 0, 0.5)'
+					break;
+				case 'Viento':
+					datoActual = Viento;
+					bgColor = 'rgb(173, 216, 230, 0.5)'
+					break;
+			}
+		const valores = {
+				labels: Fecha,
+				datasets: [{
+					label: (vista_actual != "Fuego") ? vista_actual : "FWI",
+					backgroundColor: bgColor,
+					borderColor: bgColor,
+					data: datoActual,
+					tension: 0.4,
+					pointStyle: 'circle',
+					pointRadius: 6,
+					pointHoverRadius: 10
+				}]
+			}
+ 
+			renderGraph(valores);
+	}	
+	function renderGraph(valores) {
+			if (grafico) {
+				grafico.destroy(); 
+			}
+
+			const options = {
+				indexAxis: 'x',
+				responsive: true,
+				scales: {
+					x: {
+						ticks: {
+							color: 'black'
+						}
+					},
+					y: {
+						beginAtZero: true, 
+						ticks: {
+							color: 'black'
+						},
+						grid: {
+							display: true, 
+							color: 'rgba(200, 200, 200, 0.5)' 
+						}
+					}
+				},
+				plugins: {
+					legend: {
+						display: false 
+					}
+				},
+				animation: {
+					duration: 0
+				}
+			};
+
+			const config = {
+				type: 'line',
+				data: valores,
+				options: options
+			}
+			grafico = new Chart(document.querySelector("#graph_canva").getContext('2d'),config)
+
+		}
+
 
 </script>
 	
 
-	 <script type="text/javascript">
-	 	
-	 	
-
-	 </script>
 	
 </body>
 </html>
