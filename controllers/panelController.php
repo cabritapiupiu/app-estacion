@@ -1,10 +1,10 @@
 <?php 
 
 	// se muestra el contenido de SESSION (para debug)
-	// $usuario = $_SESSION["morphyx"]["user"];
+	$usuario = $_SESSION["morphyx"]["user"];
 
 	// crea el objeto con la vista
-	$tpl = new Clima("panel");
+	$tpl = new Kiwi("panel");
 
 	// carga la vista
 	$tpl->loadTPL();

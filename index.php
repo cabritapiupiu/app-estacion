@@ -1,13 +1,21 @@
 <?php
 
+	include_once 'env.php';
+
+
+	include 'lib/mp-mailer/Mailer/src/PHPMailer.php';
+	include 'lib/mp-mailer/Mailer/src/SMTP.php';
+	include 'lib/mp-mailer/Mailer/src/Exception.php';
+
+
 	// incluimos a User para poder hacer uso de la variable cargada en session
-	
+	include_once 'models/User.php';
 
 	// Inicia la sesión
 	session_start();
 
 	// motor de plantillas
-	include 'lib/clima/Clima.php';  
+	include 'lib/kiwi/Kiwi.php';  
 
 	// para pasar variables a las plantillas
 	$vars = [];
@@ -25,36 +33,38 @@
 		$controlador = "error404";
 	}
 
-	// //=== firewall
+	//=== firewall
 
-	// // Listas de acceso dependiendo del estado del usuario
-	// $controlador_login = ["panel","landing", "detalle"];
-	// // sesion iniciada
-	// if(isset($_SESSION['app-estacion'])){
+	// Listas de acceso dependiendo del estado del usuario
+	$controlador_login = ["panel","logout","perfil","abandonar" ,"detalle"];
+	$controlador_anonimo = ["landing", "login", "register","recovery","reset"];
 
-	// 	// recorre la lista de secciones no permitidas
-	// 	foreach ($controlador_anonimo as $key => $value) {
-	// 		// si esta solicitando una sección no permitida
-	// 		if($controlador==$value){
-	// 			$controlador = "panel";
-	// 			break;
-	// 		}
-	// 	}
+	// sesion iniciada
+	if(isset($_SESSION['morphyx'])){
 
-	// }else{ // sesión no iniciada
+		// recorre la lista de secciones no permitidas
+		foreach ($controlador_anonimo as $key => $value) {
+			// si esta solicitando una sección no permitida
+			if($controlador==$value){
+				$controlador = "panel";
+				break;
+			}
+		}
 
-	// 		// recorre la lista de secciones no permitidas
-	// 		foreach ($controlador_login as $key => $value) {
-	// 		// si esta solicitando una sección no permitida
-	// 		if($controlador==$value){
-	// 			$controlador = "landing";
-	// 			break;
-	// 		}
-	// 	}
+	}else{ // sesión no iniciada
 
-	// }
+			// recorre la lista de secciones no permitidas
+			foreach ($controlador_login as $key => $value) {
+			// si esta solicitando una sección no permitida
+			if($controlador==$value){
+				$controlador = "landing";
+				break;
+			}
+		}
 
-	// // === fin firewall
+	}
+
+	// === fin firewall
 
 
 	include 'controllers/'.$controlador.'Controller.php';

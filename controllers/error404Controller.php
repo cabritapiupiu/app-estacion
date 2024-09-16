@@ -1,7 +1,7 @@
 <?php 
 	
 	// crea el objeto con la vista
-	$tpl = new Clima("error404");
+	$tpl = new Kiwi("error404");
 
 	// carga la vista
 	$tpl->loadTPL();

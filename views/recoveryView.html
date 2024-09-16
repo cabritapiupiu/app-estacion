@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" type="text/css" href="views/static/css/styles.css{{PROJECT_MODE}}"
+</head>
+<body>
+	<div id="header">
+
+			<div id="control">
+					<a href="landing"  class="css-button-rounded--yellow">Inicio</a>
+			</div>
+			 
+	
+		</div>
+		<div id="content">
+
+			<div id="window">
+				
+				<div id="window__image">
+				
+				</div>
+
+				<div id="window__description">
+					
+					<h1>Bienvenido al Recovery</h1>
+
+					<form action="" method="POST">
+						
+						<!-- Caja donde se muestra el error de logueo -->
+						<div id="msg_box"></div>
+
+						<input id="recovery_email" type="email" name="recovery_email" placeholder="Email" required>
+						<input id="btn_recovery" type="submit"  name="btn_recovery" value="Ingresar">
+					</form>
+											<div>{{MSG_RECOVERY_ERROR}}</div>
+
+					<a href="register">¿No tienes una cuenta? Registrarse</a>
+				</div>
+
+			</div>
+		</div>
+@extern('footer')

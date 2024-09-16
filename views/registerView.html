@@ -1,0 +1,59 @@
+@extern('header')
+
+	<div id="wrapper">
+
+		<div id="header">
+
+			<div id="hero">
+				<a href="landing">
+				<img src="img/system/hero.png" alt="">
+				</a>
+			</div>
+			
+			<div id="control">
+				<a href="login" class="css-button-rounded--yellow">Loguarse</a>
+			</div>
+			 
+	
+		</div>
+		 
+		<div id="content">
+
+			<div id="window">
+				
+				<div id="window__image">
+				
+				</div>
+
+				<div id="window__description">
+					<h1>Registro</h1>
+					<div class="contenedor">
+
+					<form action="" method="POST">
+						<div>
+							<input type="text" name="txt_email" placeholder="Email" required>
+						</div>
+						
+						<div>
+						<input type="text" name="txt_pass" placeholder="Contraseña" required>
+						</div>
+						<div>
+							<input type="text" name="txt_pass2" placeholder="Repetir Contraseña" required>							
+						</div>
+						
+						<input type="submit" name="btn_register" value="Ingresar">
+
+						<div>{{MSG_REGISTER_ERROR}}</div>
+
+					</form>	
+					</div>
+					 
+
+					
+					<a href="login">¿Ya tienes una cuenta? Loguarse</a>
+				</div>
+
+			</div>
+		</div>
+		 
+@extern('footer')

@@ -1,0 +1,101 @@
+@extern('header')
+
+
+	<div id="fog">
+
+		<div id="popup">
+			
+			<div id="popup__title">
+				<div id="popup__close">
+					X
+				</div>
+			</div>
+
+			<div id="popup__description">
+				Realmente desea abandonar la app
+			</div>
+
+			<div id="popup__control">
+
+				<a href="abandonar">
+					<div id="popup__accept" class="btn__accept">
+						Aceptar
+					</div>
+				</a>
+
+				<div id="popup__cancel" class="btn__cancel">
+					Cancelar
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<div id="wrapper">
+
+		<div id="header">
+
+			<div id="hero">
+				<a href="landing">
+				<img src="img/system/hero.png" alt="">
+				</a>
+			</div>
+			
+			<div id="control">
+				<a href="panel" class="css-button-rounded--yellow">Panel</a>
+				<a href="logout" class="css-button-rounded--yellow">Cerrar sesión</a>
+			</div>
+			 
+	
+		</div>
+		 
+		<div id="content">
+
+			<div id="window">
+				
+				<div id="window__image">
+			
+				</div>
+
+				<div id="window__description">
+					
+					 <h1>Perfil</h1>
+
+
+					<form action="" method="POST">
+						
+						<input type="text" name="txt_first_name" value="{{NOMBRE}}" placeholder="nombre">
+						
+						<input type="submit" name="btn_guardar" value="Guardar">
+					</form>
+
+					<button id="leaveout">Abandonar</button>
+				</div>
+
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+	 	
+		 	leaveout.addEventListener("click", e => {
+		 		fog.style.display = "flex";
+		 	})
+
+		 	function closePopUp(){
+		 		fog.style.display = 'none';
+		 	}
+
+		 	popup__close.addEventListener("click", e =>{
+		 		closePopUp();
+		 	})
+
+		 	popup__cancel.addEventListener("click", e => {
+		 		closePopUp();
+		 	})
+
+
+	 	</script>	 
+
+@extern('footer')

@@ -1,17 +1,10 @@
 <?php 
+
+	
 	
 	// Desactiva el reporte de errores de mysqli
 	mysqli_report(MYSQLI_REPORT_OFF);
 
-	/**
-	 * 
-	 * Credenciales de conexión a la base de datos
-	 * No deben ir aquí pero provisoriamente las colocamos aquí
-	 * 
-	 * */
-	
-
-	// debug - release
 	/**
 	 * 
 	 * Clase para heredar en los modelos de tabla que conecta a la base de datos
@@ -37,8 +30,7 @@
 		 * */
 		function connect(){
 				// se genera el objeto y se silencia los warning
-			$this->db = @new mysqli(HOST, USER, PASS, DB);
-
+			$this->db = @new mysqli($_ENV['HOST'], $_ENV['USER'], $_ENV['PASS'], $_ENV['DB'], $_ENV['PORT']);
 			// si hubo un error de conexión a la base de datos
 			if($this->db->connect_errno){
 
@@ -49,10 +41,13 @@
 		}
 
 		/**
+		 * 
 		 * Retorna el resultad de la query en forma de array assoc
 		 * sirve para query DML SELECT CALL DESCRIBE
+		 * 
 		 * @param string $sql query en formato SQL
 		 * @return array es un array assoc
+		 * 
 		 * */
 		function query($sql){			
 
