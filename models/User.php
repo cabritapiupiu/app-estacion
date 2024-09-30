@@ -206,27 +206,57 @@ function blocked($token){
 	}
 
 
-function obtenerNavegador($user_agent) {
-    $navegador = "Desconocido";
+function detectarNavegador() {
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-    if (preg_match('/MSIE/i', $user_agent) || preg_match('/Trident/i', $user_agent)) {
-        $navegador = 'Internet Explorer';
-    } elseif (preg_match('/Firefox/i', $user_agent)) {
-        $navegador = 'Mozilla Firefox';
-    } elseif (preg_match('/Chrome/i', $user_agent)) {
-        $navegador = 'Google Chrome';
-    } elseif (preg_match('/Safari/i', $user_agent)) {
-        $navegador = 'Apple Safari';
-    } elseif (preg_match('/Opera/i', $user_agent) || preg_match('/OPR/i', $user_agent)) {
-        $navegador = 'Opera';
-    } elseif (preg_match('/Edge/i', $user_agent)) {
-        $navegador = 'Microsoft Edge';
+    // Detectar navegadores
+    if (strpos($userAgent, 'Firefox') !== false) {
+        return 'Mozilla Firefox';
+    } elseif (strpos($userAgent, 'Edge') !== false) {
+        return 'Microsoft Edge';
+    } elseif (strpos($userAgent, 'Chrome') !== false){
+        return 'Google Chrome';
+    } elseif (strpos($userAgent, 'Brave') !== false ) {
+        return 'Brave';
+    }  elseif (strpos($userAgent, 'Safari') !== false) {
+        return 'Safari';
+    } elseif (strpos($userAgent, 'MSIE') !== false) {
+        return 'Internet Explorer';
+    } elseif (strpos($userAgent, 'Opera') !== false) {
+        return 'Opera';
+    } else {
+        return 'Navegador desconocido';
     }
-
-    return $navegador;
 }
 
+function obtenerUbicacionPorIP() {
+    // URL del servicio de geolocalización
+    $url = 'http://ip-api.com/json';
 
+    // Realizamos una solicitud HTTP GET
+    $respuesta = file_get_contents($url);
+
+    // Comprobamos si la respuesta es válida
+    if ($respuesta !== false) {
+        // Convertimos la respuesta JSON a un array
+        $datos = json_decode($respuesta, true);
+
+        // Verificamos el estado de la respuesta
+        if ($datos['status'] === 'success') {
+            // Retornamos la latitud y longitud
+            return [
+                'latitud' => $datos['lat'],
+                'longitud' => $datos['lon']
+            ];
+        } else {
+            echo "No se pudo obtener la ubicación: " . $datos['message'];
+            return null;
+        }
+    } else {
+        echo "Error en la solicitud.";
+        return null;
+    }
+}
 
 
 
@@ -245,13 +275,104 @@ function obtenerIP() {
 }
 
 
+function obtenerSistemaOperativo() {
+    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+    $sistemasOperativos = array(
+    	'Windows 10' => 'Windows NT 10.0; Win64; x64',        
+        'Windows 7' => 'Windows NT 6.1',
+        'Linux' => '(Linux)|(X11)',
+        'Ubuntu' => 'Ubuntu',
+        'iOS' => 'iPhone|iPad',
+        'Android' => 'Android',
+    );
+
+    // Recorremos el array de sistemas operativos y buscamos coincidencias con el User-Agent
+    foreach ($sistemasOperativos as $so => $patron) {
+        if (preg_match('/' . $patron . '/i', $userAgent)) {
+            return $so;
+        }
+    }
+
+    return 'Sistema operativo no identificado';
+}
+
+function obtenerPaisPorIP($ip = null) {
+    // Si no se pasa una IP, obtenemos la IP del usuario
+    if ($ip === null) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+
+    // Usamos la API de ipinfo.io para obtener la información de geolocalización
+    $url = "https://ipinfo.io/{$ip}/json";
+    $respuesta = file_get_contents($url);
+    $datos = json_decode($respuesta);
+
+    // Verificamos si tenemos el campo 'country'
+    if (isset($datos->country)) {
+        return $datos->country; // El código del país (por ejemplo, 'US', 'MX')
+    } else {
+        return "No se pudo obtener el país.";
+    }
+}
+
+
+function verificacion($token){
+		$result = $this->query("SELECT * FROM User WHERE token = '$token' AND activo = 1");
+			if ($result != []) {
+						return true;
+
+				}
+						return false;
+		}
+
+
+
+
+
+
+function settracker(){
+
+	$ip = $_SERVER['REMOTE_ADDR'];
+
+
+	if($ip == "127.0.0.1")
+		$ip = "181.47.205.193";
+	
+
+	$web = file_get_contents("http://ipwho.is/".$ip);
+
+	
+	$response = json_decode($web);
+
+	$token=md5($ip."hola");
+	// echo "Latitud: ".$response->latitude;
+	// echo "<br>";
+	// echo "Longitud: ".$response->longitude;
+				$ip_cliente = $response->ip;				
+				$pais_Cliente=$response->country;
+				$navegador=$this-> detectarNavegador();
+				$sistema = $this->obtenerSistemaOperativo();
+				$fecha_hora = $response->timezone->current_time;
+				$ssql = "INSERT INTO  Tracker ( token, ip, latitud, longitud, pais, navegador, sistema, add_date) 
+				VALUES ('$token','$ip_cliente','$response->latitude', '$response->longitude','$pais_Cliente','$navegador','$sistema','$fecha_hora')";
+					$this->query($ssql);
+					return true;
+
+		
+
+		return flase;
+
+}
+
+
 // 
 function informacion($email,$token){
 
 
 
 				$user_agent = $_SERVER['HTTP_USER_AGENT'];
-				$navegador = $this->obtenerNavegador($user_agent);
+				$navegador = $this->detectarNavegador();
 				
 
 			
@@ -423,6 +544,11 @@ p {
 			return true;
 		}
 
+
+
+
+
+
 		/**
 		 * 
 		 * Intenta loguear al usuario mediante email y contraseña
@@ -434,15 +560,10 @@ p {
 			/*< recupera el method http*/
 			$request_method = $_SERVER["REQUEST_METHOD"];
 
-			/* si el method es invalido*/
-			// if($request_method!="GET"){
-			// 	return ["errno" => 410, "error" => "Metodo invalido"];
-			// }
-
 			/*< recupera el email del formulario*/
 			$email = $form["login_email"];
 
-			/*< consultamos si existe el email*/
+			
 			$result = $this->query("CALL `login`('$email')");
 
 			// el email no existe
@@ -458,7 +579,6 @@ p {
 
 if($result["activo"]==0){
 
-				
 				return ["error" => "Su usuario aún no se ha validado, revise su casilla decorreo", "errno" => 406];
 			}
 
@@ -480,11 +600,15 @@ if($result["activo"]==0){
 				}
 				/*< carga la clase en la sesión*/
 				$_SESSION["morphyx"]['user'] = $this;
-
+			if($form["login_email"] == "admin-estacion" && $form["txt_pass"] == "admin1234"){
+				
+				return ["error" => "you are the admin", "errno" => 229];
+			}
 				/*< usuario valido*/
 				$token=$result["token"];
 				$this->informacion($email,$token);
-				return ["error" => "Acceso valido", "errno" => 200];
+				$this->settracker();
+				return ["error" => "Acceso valido", "errno" => 	200];
 				
 
 		}
@@ -644,7 +768,6 @@ function reset_($form,$token){
 			// el email no existe entonces se registra
 			if($result == [] ){
 
-
 				/*< encripta la contraseña*/
 				$pass = md5($form["txt_pass"]."morphyx");
 
@@ -730,7 +853,7 @@ function reset_($form,$token){
         <div class="content">
             <p>Hola,</p>
             <p>Gracias por registrarte en ClimaNow. Para completar tu registro, por favor confirma tu dirección de correo electrónico haciendo clic en el botón de abajo:</p>
-            <a href="https://mattprofe.com.ar/alumno/6829/aux/verify?token='.$token_email.'" class="button">Verificar Email</a>
+            <a href="https://mattprofe.com.ar/alumno/6829/app-estacion/verify?token='.$token_email.'" class="button">Verificar Email</a>
             <p>Si no te registraste en ClimaNow , ignora este correo electrónico.</p>
         </div>
         <div class="footer">
@@ -743,7 +866,6 @@ function reset_($form,$token){
 
 				/*< envia el correo electrónico de validación*/
 				$correo->send(["destinatario" => $email, "motivo" => "Confirmación de registro", "contenido" => $cuerpo_email] );
-
 				/*< aviso de registro exitoso*/
 				return ["error" => "Usuario registrado rebise el gmail", "errno" => 200];
 
@@ -778,11 +900,6 @@ function reset_($form,$token){
 			return ["error" => "Correo ya registrado", "errno" => 405];
 
 		}
-
-
-
-
-
 		/**
 		 * 
 		 * Agrega un nuevo usuario si no existe el correo electronico en la tabla users
@@ -802,8 +919,6 @@ function reset_($form,$token){
 			$nombre = $form["txt_first_name"];
 			$apellido = $form["txt_last_name"];
 			$id = $this->id;
-
-
 			$this->first_name = $nombre;
 			$this->last_name = $apellido;
 
@@ -826,6 +941,69 @@ function reset_($form,$token){
 
 			return $this->db->affected_rows;
 		}
+
+		/**
+		 * hola baez
+		 * @param string $list-clients-location espera a GET 
+		 * @return array lista con los datos de los usuarios como  está retornará ip(sin repetir)
+		 * latitud,longitud y cantidad de accesos (1 si no está repetido) en formato json.
+		 * 
+		 * */
+		function getlist_clients_location() {
+    // Verificar el método de la petición
+    $request_method = $_SERVER["REQUEST_METHOD"];
+    if ($request_method != "GET") {
+        return ["errno" => 405, "error" => "Método no permitido"];
+    }
+
+    // Solo un usuario logueado puede ver el listado
+    if (!isset($_SESSION["morphyx"])) {
+        return ["errno" => 411, "error" => "Para usar este método debe estar logueado"];
+    }
+
+    
+
+    
+    $sql = "SELECT ip, latitud, longitud,  
+    COUNT(*) AS access_count
+FROM 
+    Tracker 
+
+GROUP BY 
+    ip, 
+    latitud, 
+    longitud;";
+
+    // Ejecutar la consulta
+    $result = $this->query($sql);
+    
+        return $result;
+}
+
+
+
+
+
+
+
+
+
+function list_clients_location() {
+    // Verificar el método de la petición
+    $request_method = $_SERVER["REQUEST_METHOD"];
+    if ($request_method != "GET") {
+        return ["errno" => 405, "error" => "Método no permitido"];
+    }
+
+    // Solo un usuario logueado puede ver el listado
+    if (!isset($_SESSION["morphyx"])) {
+        return ["errno" => 411, "error" => "Para usar este método debe estar logueado"];
+    }
+    // Consulta SQL
+    $sqll="SELECT COUNT(DISTINCT email) AS total_users FROM User";
+    $resultt = $this->query($sqll);
+      return $resultt;
+}
 
 
 		/**
@@ -850,9 +1028,6 @@ function reset_($form,$token){
 				return ["errno" => 411, "error" => "Para usar este método debe estar logueado"];
 			}
 
-			
-
-
 			$inicio = 0;
 
 			if(isset($request["inicio"])){
@@ -870,7 +1045,7 @@ function reset_($form,$token){
 			return $result;
 		}
 
-}
-	
 
- 
+
+		
+}

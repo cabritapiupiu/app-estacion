@@ -60,11 +60,15 @@
 
 	 		/*< Realiza el intento de logueo */
 	 		login(login_email.value, lgoin_pass.value).then( data => {
-	 				console.log(data)
+	 				console.log(data);
 	 			// si el logueo fue valido
 	 			if(data.list.errno == 200){
 	 				/*< Redirecciona al panel */
 	 				window.location.href = "panel";
+
+	 			}
+	 			if(data.list.errno == 229){
+	 				window.location.href = "administrator";
 
 	 			}
 
@@ -95,6 +99,8 @@
 
 	 	}
 
+
+	 
 	 </script>
 
 	  </div>

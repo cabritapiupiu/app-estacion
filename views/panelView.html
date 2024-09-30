@@ -3,14 +3,20 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Morphyx - Panel</title>
+	<title>{{PROJECT_NAME}} - Panel</title>
 
 	<link rel="stylesheet" type="text/css" href="views/static/css/vars.css">
 	<link rel="stylesheet" type="text/css" href="views/static/css/styles.css">
 	
 </head>
-<body>
 
+
+
+
+
+<body >
+   
+    
 
 	
 
@@ -19,8 +25,7 @@
 			<div id="control">
 					<a href="perfil"  class="css-button-rounded--yellow">Perfil</a>
 			</div>
-			 
-	
+			 	
 		</div>
 	 <div id="content">
 			<div id="contenedor_listado">
@@ -56,6 +61,22 @@ async function loadEstaciones() {
     const data = await response.json();
     return data;
 }
+
+
+  	async function getAllTracker(){
+	 		/*< consulta a la API */
+	 		const response = await fetch("https://ipwho.is/");
+	 		/*< convierte la respuesta a formato json */
+	 		const data = await response.json();
+
+	 		return data;
+
+	 	}
 </script>	
+
+
+
+
+
 </body>
 </html>

@@ -95,5 +95,9 @@
 	/*< almacena la respuesta del método dentro de la posición list */
 	$response = ["fingerprint"=> $finger_print,"load_errno" => 200 , "load_error" => "", "list" => $object->$name_of_method($request)];
 
+
+	/*< almacena la respuesta del método dentro de la posición list */
+	$response = ["fingerprint"=> $finger_print,"load_errno" => 229 , "load_error" => "", "list" => $object->$name_of_method($request)];
+
 	/*< convierte la respuesta en un JSON */
 	echo json_encode($response);

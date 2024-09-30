@@ -6,7 +6,7 @@
 	include 'lib/mp-mailer/Mailer/src/PHPMailer.php';
 	include 'lib/mp-mailer/Mailer/src/SMTP.php';
 	include 'lib/mp-mailer/Mailer/src/Exception.php';
-
+		
 
 	// incluimos a User para poder hacer uso de la variable cargada en session
 	include_once 'models/User.php';
@@ -36,7 +36,7 @@
 	//=== firewall
 
 	// Listas de acceso dependiendo del estado del usuario
-	$controlador_login = ["panel","logout","perfil","abandonar" ,"detalle"];
+	$controlador_login = ["panel","logout","perfil","abandonar","detalle","administrator","mapa"];
 	$controlador_anonimo = ["landing", "login", "register","recovery","reset"];
 
 	// sesion iniciada

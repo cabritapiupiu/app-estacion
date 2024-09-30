@@ -14,7 +14,6 @@
 	// se crea la clase User que hereda de DBAbstract
 	class Estaciones extends DBAbstract{
 
-
 		/*< constructor de la clase*/
 		function __construct(){
 
@@ -52,7 +51,6 @@
 			return $response;
 		}
 
-
 		/**
 		 * 
 		 * @params retorna los datos de una estación metereologica especifica por chipip
@@ -84,10 +82,6 @@
 
 			return $response;
 		}
-
-
 	}
-
-
 
  ?>

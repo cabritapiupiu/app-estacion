@@ -2,7 +2,8 @@
 
 	// se muestra el contenido de SESSION (para debug)
 	$usuario = $_SESSION["morphyx"]["user"];
-
+		$userAgent = $_SERVER['HTTP_USER_AGENT'];
+		// var_dump($userAgent);
 	// crea el objeto con la vista
 	$tpl = new Kiwi("panel");
 
