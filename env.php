@@ -24,16 +24,16 @@
 
 
 	//=== Acceso a la base de datos
-	$_ENV["HOST"]= "mattprofe.com.ar";
-	$_ENV["USER"]= "6829";
-	$_ENV["PASS"]= "rata.higuera.guante";
-	$_ENV["DB"]= "6829";
-	$_ENV["PORT"] = 3306; // puerto de conexión a la DB
+	$_ENV["HOST"]= "";
+	$_ENV["USER"]= "";
+	$_ENV["PASS"]= "";
+	$_ENV["DB"]= "";
+	$_ENV["PORT"] = ; // puerto de conexión a la DB
 
 	//== Acceso a correo electrónico
 	$_ENV["MAILER_REMITENTE"] = 'ClimaNow6829@gmail.com'; // <=== Correo de la app
 	$_ENV["MAILER_NOMBRE"] = 'ClimaNow'; // <=== Nombre que aparece en el correo
-	$_ENV["MAILER_PASSWORD"] = 'pzey womx tgqw xigo'; // <=== Token
+	$_ENV["MAILER_PASSWORD"] = ''; // <=== Token
 
 	$_ENV["MAILER_HOST"] = 'smtp.gmail.com';
 	$_ENV["MAILER_PORT"] = '587';
